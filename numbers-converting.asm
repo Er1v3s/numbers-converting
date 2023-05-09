@@ -10,7 +10,7 @@ start:
 
 program:
 	wyswietl	msg1
-	mov	ecx,5	       ; loop counter initialization
+	mov	ecx,16		; loop counter initialization
 	xor	ebx, ebx       ; clear registers before the next loop run
 	xor	eax, eax       ; clear registers before the next loop run
 input:
@@ -40,22 +40,44 @@ input:
 
 	loop	input
 
+SHOW_BIN:
 	add	     [row_position],2
 	ustaw_kursor [row_position],0
 	inc	     [row_position]
-	wyswietl     result_bin
+	wyswietl     result_bin_text
+	mov	     [result_bin], bx
+	mov cx, 16
+	mov bx, [result_bin]
 
+   ety1:
+	push	cx
+	rcl	bx, 1
+	jc	ety2
+	mov	dl, '0'
+	jmp	ety3
+
+   ety2:
+	mov	dl, '1'
+
+   ety3:
+	wysw_znak	dl
+
+	pop	cx
+	loop	ety1
+
+SHOW_HEX:
 	ustaw_kursor [row_position],0
 	inc	     [row_position]
-	wyswietl     result_oct
+	wyswietl     result_hex_text
 
+SHOW_OCT:
 	ustaw_kursor [row_position],0
 	inc	     [row_position]
-	wyswietl     result_dec
-
+	wyswietl     result_oct_text
+SHOW_DEC:
 	ustaw_kursor [row_position],0
 	add	     [row_position],2
-	wyswietl     result_hex
+	wyswietl     result_dec_text
 
 	ustaw_kursor [row_position],0
 	mov	     [counter], 15
@@ -92,15 +114,20 @@ remove_char:
 	ustaw_kursor [row_position],[counter]
 	jmp    input
 
+
 section '.data' data readable writeable
 
 	row_position	dw	0,0
 	counter 	dw	15,0	; msg1 length
-	temp_ebx	dd	?
+;	 temp_ebx	 dd	 ?
 
 	msg1	db	'Wprowadz dane: ',0
-	result_bin	db	  '[bin] = Wynik w postaci binarnej',0
-	result_oct	db	  '[oct] = Wynik w postaci oktalnej',0
-	result_dec	db	  '[dec] = Wynik w postaci decymalnej',0
-	result_hex	db	  '[hex] = Wynik w postaci hexadecymalnej',0
+	result_bin_text      db        '[bin] = ',0
+	result_bin	     dw        ?,0
+	result_hex_text      db        '[hex] = ',0
+	result_hex	     dd        "d",0
+	result_oct_text      db        '[oct] = ',0
+	result_oct	     db        ?,0
+	result_dec_text      db        '[dec] = ',0
+	result_dec	     db        ?,0
 
