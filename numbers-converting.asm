@@ -26,6 +26,9 @@ input:
 
 	wysw_znak	al
 	inc	[counter]
+
+	mov	dl,al
+
 	loop	input
 
 	add	     [row_position],2
@@ -47,28 +50,13 @@ input:
 
 	ustaw_kursor [row_position],0
 	mov	     [counter], 15
+
 	call	     program
 
 char_validator:
 	cmp	al, 30h
 	je	correct_validation
 	cmp	al, 31h
-	je	correct_validation
-	cmp	al, 32h
-	je	correct_validation
-	cmp	al, 33h
-	je	correct_validation
-	cmp	al, 34h
-	je	correct_validation
-	cmp	al, 35h
-	je	correct_validation
-	cmp	al, 36h
-	je	correct_validation
-	cmp	al, 37h
-	je	correct_validation
-	cmp	al, 38h
-	je	correct_validation
-	cmp	al, 39h
 	je	correct_validation
    invalid_input:
 	jmp	input
