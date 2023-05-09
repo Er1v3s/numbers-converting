@@ -10,7 +10,9 @@ start:
 
 program:
 	wyswietl	msg1
-	mov	ecx,5	       ; inicjalizacja licznika pêtli
+	mov	ecx,5	       ; loop counter initialization
+	xor	ebx, ebx       ; clear registers before the next loop run
+	xor	eax, eax       ; clear registers before the next loop run
 input:
 	pob_znak
 
@@ -27,7 +29,14 @@ input:
 	wysw_znak	al
 	inc	[counter]
 
-	mov	dl,al
+	sub	al, '0' 	; from hex to ASCII
+	or	ebx,ebx 	; check ebx is equal 0
+	jz	first_bit	; if yes create first bit
+	rcl	ebx,1		; shift bits to left
+	cmp	al,1		; if al = 1 add 1 to eax if al == 0 go ahead
+	je	add_one
+
+   return_after_bits_operation:
 
 	loop	input
 
@@ -61,6 +70,14 @@ char_validator:
    invalid_input:
 	jmp	input
 
+first_bit:
+	mov	ebx, eax
+	jmp	return_after_bits_operation
+
+add_one:
+	add	ebx,1
+	jmp	return_after_bits_operation
+
 end_program:
 	invoke ExitProcess
 
@@ -79,6 +96,7 @@ section '.data' data readable writeable
 
 	row_position	dw	0,0
 	counter 	dw	15,0	; msg1 length
+	temp_ebx	dd	?
 
 	msg1	db	'Wprowadz dane: ',0
 	result_bin	db	  '[bin] = Wynik w postaci binarnej',0
