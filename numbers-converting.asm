@@ -13,6 +13,15 @@ program:
 	mov	ecx,16
 input:
 	pob_znak_ECHO
+
+	cmp	al,51h		; ASCII Q key
+	je	end_program
+	cmp	al,71h
+	je	end_program	; ASCII q key
+
+	cmp	al,08h		; ASCII backspace key
+	je	clear_input
+
 	loop	input
 
 	add	     [row_position],2
@@ -36,9 +45,18 @@ input:
 	call	     program
 
 
+end_program:
+	invoke ExitProcess
+
+clear_input:
+	wyswietl       test_msg
+	jmp    input
+
 section '.data' data readable writeable
 
 	row_position	dw	0,0
+
+	test_msg	db	'Dzialam!',0
 	msg1	db	'Wprowadz dane: ',0
 	result_bin	db	  '[bin] = Wynik w postaci binarnej',0
 	result_oct	db	  '[oct] = Wynik w postaci oktalnej',0
