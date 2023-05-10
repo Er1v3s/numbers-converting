@@ -22,6 +22,8 @@ input:
 	je	end_program
 	cmp	al,08h		; ASCII backspace key
 	je	remove_char
+	cmp	al,0dh		; ASCII enter key
+	je	leave_loop
 	jmp	char_validator
 
    correct_validation:
@@ -30,7 +32,7 @@ input:
 	inc	[counter]
 
 	sub	al, '0' 	; from hex to ASCII
-	or	ebx,ebx 	; check ebx is equal 0
+	or	ebx,ebx 	; check ebx register is empty
 	jz	first_bit	; if yes create first bit
 	rcl	ebx,1		; shift bits to left
 	cmp	al,1		; if al = 1 add 1 to eax if al == 0 go ahead
@@ -40,7 +42,9 @@ input:
 
 	loop	input
 
-SHOW_BIN:
+leave_loop:
+
+;SHOW_BIN
 	add	     [row_position],2
 	ustaw_kursor [row_position],0
 	inc	     [row_position]
@@ -65,16 +69,17 @@ SHOW_BIN:
 	pop	cx
 	loop	ety1
 
-SHOW_HEX:
+;SHOW_HEX
 	ustaw_kursor [row_position],0
 	inc	     [row_position]
 	wyswietl     result_hex_text
 
-SHOW_OCT:
+;SHOW_OCT
 	ustaw_kursor [row_position],0
 	inc	     [row_position]
 	wyswietl     result_oct_text
-SHOW_DEC:
+
+;SHOW_DEC
 	ustaw_kursor [row_position],0
 	add	     [row_position],2
 	wyswietl     result_dec_text
