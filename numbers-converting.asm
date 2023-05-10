@@ -71,6 +71,56 @@ start:
 	inc	     [row_position]
 	wyswietl     result_hex_text
 
+	;16-12 bits
+	mov	ax,[temp_ebx]
+	shr ah,4
+	cmp ah,10
+	jb hex_ety1
+	add ah,55
+	jmp hex_ety2
+
+   hex_ety1:
+	add ah,30h
+   hex_ety2:
+	wysw_znak ah
+
+	;12-8 bits
+	mov	ax,[temp_ebx]
+	and ah,0Fh
+	cmp ah,10
+	jb hex_ety3
+	add ah,55
+	jmp hex_ety4
+   hex_ety3:
+	add ah,30h
+   hex_ety4:
+	wysw_znak ah
+
+	;8-4 bits
+	mov	ax,[temp_ebx]
+	shr al,4
+	cmp al,10
+	jb hex_ety2_1
+	add al,55
+	jmp hex_ety2_2
+   hex_ety2_1:
+	add al,30h
+   hex_ety2_2:
+	wysw_znak al
+
+	;4-0 bits
+	mov	ax,[temp_ebx]
+	and al,0Fh
+	cmp al,10
+	jb hex_ety2_3
+	add al,55
+	jmp hex_ety2_4
+   hex_ety2_3:
+	add al,30h
+   hex_ety2_4:
+	wysw_znak al
+
+
 ;SHOW OCT
 	ustaw_kursor [row_position],0
 	inc	     [row_position]
