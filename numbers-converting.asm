@@ -7,8 +7,6 @@ include 'win_macros.inc'
 section '.code' code readable executable
 
 start:
-
-program:
 	wyswietl	msg1
 	mov	ecx,16		; loop counter initialization
 	xor	ebx, ebx       ; clear registers before the next loop run
@@ -27,7 +25,6 @@ input:
 	jmp	char_validator
 
    correct_validation:
-
 	wysw_znak	al
 	inc	[counter]
 
@@ -39,35 +36,36 @@ input:
 	je	add_one
 
    return_after_bits_operation:
-
 	loop	input
 
 leave_loop:
+	mov	[temp_ebx], bx
 
 ;SHOW_BIN
 	add	     [row_position],2
 	ustaw_kursor [row_position],0
 	inc	     [row_position]
 	wyswietl     result_bin_text
+
 	mov	     [result_bin], bx
 	mov cx, 16
 	mov bx, [result_bin]
 
-   ety1:
+   bin_ety1:
 	push	cx
 	rcl	bx, 1
-	jc	ety2
+	jc	bin_ety2
 	mov	dl, '0'
-	jmp	ety3
+	jmp	bin_ety3
 
-   ety2:
+   bin_ety2:
 	mov	dl, '1'
 
-   ety3:
+   bin_ety3:
 	wysw_znak	dl
 
 	pop	cx
-	loop	ety1
+	loop	bin_ety1
 
 ;SHOW_HEX
 	ustaw_kursor [row_position],0
@@ -84,10 +82,34 @@ leave_loop:
 	add	     [row_position],2
 	wyswietl     result_dec_text
 
+	mov	ax,[temp_ebx]  ; wczytanie wartoœci 16-bitowej do rejestru AX
+
+	mov	bx, 10		; inicjalizacja rejestru BX wartoœci¹ 10
+	mov	cx, 0		; inicjalizacja rejestru CX zerem
+   dec_ety1:
+	xor	dx, dx		; inicjalizacja rejestru DX zerem
+	div	bx		; podzielenie wartoœci w rejestrze AX przez 10
+	push	dx		; zapisanie wyniku na stosie
+	inc	cx		; inkrementacja licznika cyfr dziesiêtnych
+	test	ax, ax		; sprawdzenie, czy wartoœæ w rejestrze AX wynosi 0
+	jnz	dec_ety1	; jeœli nie wynosi, to powrót do konwersji
+
+; wyœwietlenie cyfr dziesiêtnych
+   dec_ety2:
+	pop	dx		; pobranie wyniku z stosu
+	add	dl, '0' 	; dodanie wartoœci '0' (w ASCII) do rejestru DL
+	wysw_znak   dl		; wywo³anie makra wysw_znak
+	loop	    dec_ety2	; powtórzenie wyœwietlenia dla pozosta³ych cyfr
+
+
+
+
+
+
 	ustaw_kursor [row_position],0
 	mov	     [counter], 15
 
-	call	     program
+	call	     start
 
 char_validator:
 	cmp	al, 30h
@@ -124,7 +146,7 @@ section '.data' data readable writeable
 
 	row_position	dw	0,0
 	counter 	dw	15,0	; msg1 length
-;	 temp_ebx	 dd	 ?
+	temp_ebx	dw	?
 
 	msg1	db	'Wprowadz dane: ',0
 	result_bin_text      db        '[bin] = ',0
@@ -132,7 +154,7 @@ section '.data' data readable writeable
 	result_hex_text      db        '[hex] = ',0
 	result_hex	     dd        "d",0
 	result_oct_text      db        '[oct] = ',0
-	result_oct	     db        ?,0
+	result_oct	     dw        ?,0
 	result_dec_text      db        '[dec] = ',0
-	result_dec	     db        ?,0
+	result_dec	     dw        ?,0
 
