@@ -126,6 +126,40 @@ start:
 	inc	     [row_position]
 	wyswietl     result_oct_text
 
+	mov	ax,[temp_ebx]
+	shr	ax,15
+	add	ax,30h
+	wysw_znak al
+
+	mov	ax,[temp_ebx]
+	shl	ax,1
+	shr	ax,13
+	add	ax,30h
+	wysw_znak al
+
+	mov	ax,[temp_ebx]
+	shl	ax,4
+	shr	ax,13
+	add	ax,30h
+	wysw_znak al
+
+	mov	ax,[temp_ebx]
+	shl	ax,7
+	shr	ax,13
+	add	ax,30h
+	wysw_znak al
+
+	mov	ax,[temp_ebx]
+	shl	ax,10
+	shr	ax,13
+	add	ax,30h
+	wysw_znak al
+
+	mov	ax,[temp_ebx]
+	and	ax,7
+	add	ax,30h
+	wysw_znak al
+
 ;SHOW DEC
 	ustaw_kursor [row_position],0
 	add	     [row_position],2
