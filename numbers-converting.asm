@@ -11,6 +11,7 @@ start:
 	mov	ecx,16		; loop counter initialization
 	xor	ebx,ebx 	; clear registers before the next loop run
 	xor	eax,eax 	; clear registers before the next loop run
+
    input:
 	pob_znak
 
@@ -39,7 +40,7 @@ start:
 	loop	input
 
    leave_loop:
-	mov	[temp_ebx], bx
+	mov	[temp_ebx],bx
 
 ;SHOW_BIN
 	add	     [row_position],2
@@ -47,8 +48,8 @@ start:
 	inc	     [row_position]
 	wyswietl     result_bin_text
 
-	mov	     cx,16
-	mov	     bx,[temp_ebx]
+	mov	cx,16
+	mov	bx,[temp_ebx]
 
    bin_ety1:
 	push	cx
@@ -61,7 +62,7 @@ start:
 	mov	dl,'1'
 
    bin_ety3:
-	wysw_znak	dl
+	wysw_znak dl
 
 	pop	cx
 	loop	bin_ety1
@@ -73,50 +74,57 @@ start:
 
 	;16-12 bits
 	mov	ax,[temp_ebx]
-	shr ah,4
-	cmp ah,10
-	jb hex_ety1
-	add ah,55
-	jmp hex_ety2
+	shr	ah,4
+	cmp	ah,10
+	jb	hex_ety1
+	add	ah,55
+	jmp	hex_ety2
 
    hex_ety1:
-	add ah,30h
+	add	ah,30h
+
    hex_ety2:
 	wysw_znak ah
 
 	;12-8 bits
 	mov	ax,[temp_ebx]
-	and ah,0Fh
-	cmp ah,10
-	jb hex_ety3
-	add ah,55
-	jmp hex_ety4
+	and	ah,0Fh
+	cmp	ah,10
+	jb	hex_ety3
+	add	ah,55
+	jmp	hex_ety4
+
    hex_ety3:
-	add ah,30h
+	add	ah,30h
+
    hex_ety4:
 	wysw_znak ah
 
 	;8-4 bits
 	mov	ax,[temp_ebx]
-	shr al,4
-	cmp al,10
-	jb hex_ety2_1
-	add al,55
-	jmp hex_ety2_2
+	shr	al,4
+	cmp	al,10
+	jb	hex_ety2_1
+	add	al,55
+	jmp	hex_ety2_2
+
    hex_ety2_1:
-	add al,30h
+	add	al,30h
+
    hex_ety2_2:
 	wysw_znak al
 
 	;4-0 bits
 	mov	ax,[temp_ebx]
-	and al,0Fh
-	cmp al,10
-	jb hex_ety2_3
-	add al,55
-	jmp hex_ety2_4
+	and	al,0Fh
+	cmp	al,10
+	jb	hex_ety2_3
+	add	al,55
+	jmp	hex_ety2_4
+
    hex_ety2_3:
-	add al,30h
+	add	al,30h
+
    hex_ety2_4:
 	wysw_znak al
 
@@ -126,35 +134,41 @@ start:
 	inc	     [row_position]
 	wyswietl     result_oct_text
 
+	;16-15 bit
 	mov	ax,[temp_ebx]
 	shr	ax,15
 	add	ax,30h
 	wysw_znak al
 
+	;15-12 bit
 	mov	ax,[temp_ebx]
 	shl	ax,1
 	shr	ax,13
 	add	ax,30h
 	wysw_znak al
 
+	;12-9 bit
 	mov	ax,[temp_ebx]
 	shl	ax,4
 	shr	ax,13
 	add	ax,30h
 	wysw_znak al
 
+	;9-6 bit
 	mov	ax,[temp_ebx]
 	shl	ax,7
 	shr	ax,13
 	add	ax,30h
 	wysw_znak al
 
+	;6-3 bit
 	mov	ax,[temp_ebx]
 	shl	ax,10
 	shr	ax,13
 	add	ax,30h
 	wysw_znak al
 
+	;3-0 bit
 	mov	ax,[temp_ebx]
 	and	ax,7
 	add	ax,30h
@@ -179,7 +193,7 @@ start:
 
    dec_ety2:
 	pop	dx
-	add	dl, '0' 	; from hex to ASCII
+	add	dl,'0'		; from hex to ASCII
 	wysw_znak   dl
 	loop	dec_ety2
 
@@ -193,6 +207,7 @@ char_validator:
 	je	correct_validation
 	cmp	al,31h
 	je	correct_validation
+
    invalid_input:
 	jmp	input
 
@@ -211,13 +226,12 @@ remove_char:
 	cmp	[counter],15	  ; 15 is minimal coutner value
 	jbe	continue
 	dec	[counter]
-	inc	ecx		  ;
+	inc	ecx
    continue:
 	ustaw_kursor [row_position],[counter]
 	wysw_znak	20h
 	ustaw_kursor [row_position],[counter]
 	jmp    input
-
 
 section '.data' data readable writeable
 
@@ -230,4 +244,3 @@ section '.data' data readable writeable
 	result_hex_text      db        '[hex] = ',0
 	result_oct_text      db        '[oct] = ',0
 	result_dec_text      db        '[dec] = ',0
-
